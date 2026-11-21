@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="th" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prayer Silence • ดาวน์โหลดแอปโหมดเงียบละหมาด &amp; จอแสดงผลมัสยิด</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-dark: #070b0e;
+      --panel-dark: #0e171c;
+      --emerald-deep: #0b2420;
+      --gold: #d4af37;
+      --gold-soft: #f3d778;
+    }
+    body {
+      font-family: 'Noto Sans Thai', 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-dark);
+      color: #f3f4f6;
+      overflow-x: hidden;
+    }
+    .font-arabic {
+      font-family: 'Amiri', serif;
+    }
+    .gold-gradient {
+      background: linear-gradient(135deg, #f5df8c 0%, #d4af37 50%, #b38b22 100%);
+    }
+    .islamic-pattern {
+      background-image: radial-gradient(rgba(212, 175, 55, 0.08) 1px, transparent 1px),
+                        radial-gradient(rgba(16, 185, 129, 0.06) 1px, transparent 1px);
+      background-size: 32px 32px;
+      background-position: 0 0, 16px 16px;
+    }
+    .glass-card {
+      background: linear-gradient(165deg, rgba(16, 30, 34, 0.92) 0%, rgba(10, 16, 20, 0.96) 100%);
+      border: 1px solid rgba(212, 175, 55, 0.24);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+    }
+  </style>
+</head>
+<body class="islamic-pattern min-h-screen antialiased selection:bg-amber-400/30 selection:text-amber-200">
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 hidden px-5 py-2.5 rounded-full bg-amber-400 text-slate-950 font-bold text-sm shadow-2xl transition-all duration-300"></div>
+
+  <!-- Modal ตั้งค่าลิงก์ดาวน์โหลด APK -->
+  <div id="linkModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4">
+    <div class="glass-card w-full max-w-md rounded-2xl p-6 space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-bold text-amber-300" data-i18n="modalTitle">ตั้งค่าลิงก์ดาวน์โหลด APK จริง</h3>
+        <button id="closeModalBtn" type="button" class="text-slate-400 hover:text-white p-1 rounded-lg">✕</button>
+      </div>
+      <p class="text-xs text-slate-300 leading-relaxed" data-i18n="modalDesc">
+        วางลิงก์ไฟล์ app-release.apk จาก Google Drive, GitHub Releases หรือโฮสต์ของคุณ เพื่อให้ปุ่มดาวน์โหลดบนหน้านี้พร้อมใช้งานทันที
+      </p>
+      <input id="apkUrlInput" type="url" placeholder="https://github.com/.../releases/download/v9.1/app-release.apk"
+        class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-amber-500/30 text-sm text-white focus:outline-none focus:border-amber-400" />
+      <div class="flex items-center justify-end gap-2 pt-1">
+        <button id="cancelModalBtn" type="button" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200" data-i18n="cancel">ยกเลิก</button>
+        <button id="saveApkUrlBtn" type="button" class="px-4 py-2 rounded-xl text-xs font-bold gold-gradient text-slate-950 hover:opacity-95" data-i18n="saveLink">บันทึกลิงก์</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navbar -->
+  <header class="sticky top-0 z-40 backdrop-blur-md bg-[#070b0e]/85 border-b border-amber-500/20">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <!-- SVG โลโก้มัสยิด + เสียงเงียบ -->
+        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-900 to-slate-950 border border-amber-400/60 flex items-center justify-center shrink-0 shadow-lg">
+          <svg class="w-5 h-5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M12 2C9.5 4.8 7 6.5 7 9.5V11h10V9.5C17 6.5 14.5 4.8 12 2Z" fill="currentColor" fill-opacity="0.22"/>
+            <path d="M4 21h16M6 21V11h12v10M10 21v-4a2 2 0 0 1 4 0v4" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="12" cy="1.8" r="0.6" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="truncate">
+          <div class="font-extrabold text-base sm:text-lg tracking-tight text-white flex items-center gap-2">
+            <span>Prayer Silence</span>
+            <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-400/15 text-amber-300 border border-amber-400/30">v9.1</span>
+          </div>
+          <p class="text-[11px] text-emerald-300/90 truncate" data-i18n="tagline">โหมดเงียบละหมาดอัตโนมัติ &amp; จอมัสยิดสไตล์ Tawkit</p>
+        </div>
+      </div>
+
+      <!-- Language Switcher -->
+      <div class="flex items-center gap-1 bg-slate-900/90 border border-amber-500/25 rounded-xl p-1 shrink-0">
+        <button type="button" data-lang="th" class="lang-btn px-2.5 py-1 rounded-lg text-xs font-bold transition">ไทย</button>
+        <button type="button" data-lang="ar" class="lang-btn px-2.5 py-1 rounded-lg text-xs font-bold transition">العربية</button>
+        <button type="button" data-lang="en" class="lang-btn px-2.5 py-1 rounded-lg text-xs font-bold transition">EN</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 pt-8 pb-16 space-y-12">
+
+    <!-- Hero Section -->
+    <section class="grid lg:grid-cols-12 gap-8 items-center">
+      <div class="lg:col-span-7 space-y-5">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/80 border border-emerald-500/35 text-emerald-300 text-xs font-semibold">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span data-i18n="heroBadge">ทำงานออฟไลน์ 100% • ครบ 77 จังหวัดในไทย • ไร้โฆษณาคั่น</span>
+        </div>
+
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight text-white">
+          <span data-i18n="heroTitle1">ปิดเสียงมือถืออัตโนมัติทุกวักตู</span>
+          <span class="block text-transparent bg-clip-text gold-gradient mt-1" data-i18n="heroTitle2">พร้อมเปลี่ยนจอทีวีมัสยิดสไตล์ Tawkit</span>
+        </h1>
+
+        <p class="text-sm sm:text-base text-slate-300 leading-relaxed max-w-2xl" data-i18n="heroDesc">
+          แอปพลิเคชันสำหรับมัสยิดและพี่น้องมุสลิม ช่วยตัดเสียงเรียกเข้าและเปิดโหมดห้ามรบกวนอัตโนมัติเมื่อถึงเวลาละหมาด 5 เวลาและวันศุกร์ แสดงผลได้ทั้งแนวตั้งบนมือถือและแนวนอนบนจอสมาร์ททีวีของมัสยิด
+        </p>
+
+        <!-- Download Action Buttons -->
+        <div class="flex flex-wrap items-center gap-3 pt-1">
+          <a id="downloadApkBtn" href="#install-guide"
+            class="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-2xl gold-gradient text-slate-950 font-extrabold text-sm sm:text-base shadow-xl shadow-amber-500/15 hover:scale-[1.01] active:scale-[0.99] transition">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+              <path d="M12 3v12m0 0-4-4m4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span data-i18n="downloadBtn">ดาวน์โหลด Prayer Silence APK (v9.1)</span>
+          </a>
+
+          <button id="copyShareBtn" type="button"
+            class="inline-flex items-center gap-2 px-4 py-3.5 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-amber-500/35 text-amber-300 font-bold text-sm transition">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M8 17.929H6c-1.105 0-2-.912-2-2.036V5.036C4 3.91 4.895 3 6 3h8c1.105 0 2 .911 2 2.036v1.866m-6 14.098h8c1.105 0 2-.911 2-2.036V8.036C20 6.91 19.105 6 18 6h-8c-1.105 0-2 .911-2 2.036v10.928c0 1.125.895 2.036 2 2.036Z" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span data-i18n="copyShareText">คัดลอกข้อความแชร์เข้ากลุ่มมัสยิด</span>
+          </button>
+
+          <button id="openLinkModalBtn" type="button"
+            class="inline-flex items-center gap-1.5 px-3.5 py-3.5 rounded-2xl bg-emerald-950/60 hover:bg-emerald-900/60 border border-emerald-500/35 text-emerald-300 font-semibold text-xs transition">
+            <span>⚙</span>
+            <span data-i18n="setApkLink">ใส่ลิงก์ APK</span>
+          </button>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-slate-400 pt-1">
+          <span>✔ Android 8.0 ขึ้นไป (มือถือ &amp; Android TV Box)</span>
+          <span>✔ ขนาดไฟล์ ~49 MB</span>
+          <span id="apkUrlStatus" class="text-amber-300/90 font-medium"></span>
+        </div>
+      </div>
+
+      <!-- Right: Tawkit-style Live Preview Card -->
+      <div class="lg:col-span-5">
+        <div class="glass-card rounded-3xl p-5 relative overflow-hidden">
+          <div class="absolute -right-8 -top-8 w-36 h-36 rounded-full bg-amber-500/10 blur-2xl pointer-events-none"></div>
+          <div class="flex items-center justify-between border-b border-amber-500/20 pb-3">
+            <div>
+              <p class="text-xs text-amber-300 font-bold" data-i18n="previewMosque">🕌 มัสยิดกลางลำใหม่ • จ.ยะลา</p>
+              <p id="liveDateText" class="text-[11px] text-slate-400 mt-0.5">--</p>
+            </div>
+            <div class="text-right" dir="ltr">
+              <div id="liveClock" class="text-2xl sm:text-3xl font-extrabold text-amber-400 tabular-nums tracking-tight">00:00:00</div>
+              <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30" data-i18n="autoBadge">อัตโนมัติเปิดอยู่</span>
+            </div>
+          </div>
+
+          <div class="mt-3 space-y-1.5 text-xs sm:text-sm">
+            <div class="grid grid-cols-4 text-[11px] text-amber-300/80 font-bold px-2.5 pb-1">
+              <span data-i18n="colPrayer">ละหมาด</span>
+              <span class="text-center" data-i18n="colAdhan">อาซาน</span>
+              <span class="text-center" data-i18n="colIqamah">อิกอมะฮ์</span>
+              <span class="text-center" data-i18n="colRestore">คืนเสียง</span>
+            </div>
+            <div class="grid grid-cols-4 items-center px-2.5 py-1.5 rounded-xl bg-white/[0.03] border border-white/5">
+              <span class="font-semibold">ซุบฮี <span class="font-arabic text-amber-300 ml-1">الفجر</span></span>
+              <span class="text-center tabular-nums">04:56</span>
+              <span class="text-center tabular-nums text-emerald-300">05:16</span>
+              <span class="text-center tabular-nums text-slate-400">05:36</span>
+            </div>
+            <div class="grid grid-cols-4 items-center px-2.5 py-1.5 rounded-xl bg-amber-400/10 border border-amber-400/40">
+              <span class="font-bold text-amber-300">ซุฮ์ริ <span class="font-arabic ml-1">الظهر</span></span>
+              <span class="text-center tabular-nums font-bold">12:08</span>
+              <span class="text-center tabular-nums font-bold text-amber-300">12:28</span>
+              <span class="text-center tabular-nums text-slate-300">12:48</span>
+            </div>
+            <div class="grid grid-cols-4 items-center px-2.5 py-1.5 rounded-xl bg-white/[0.03] border border-white/5">
+              <span class="font-semibold">อัสรี <span class="font-arabic text-amber-300 ml-1">العصر</span></span>
+              <span class="text-center tabular-nums">15:27</span>
+              <span class="text-center tabular-nums text-emerald-300">15:47</span>
+              <span class="text-center tabular-nums text-slate-400">16:07</span>
+            </div>
+            <div class="grid grid-cols-4 items-center px-2.5 py-1.5 rounded-xl bg-white/[0.03] border border-white/5">
+              <span class="font-semibold">มัฆริบ <span class="font-arabic text-amber-300 ml-1">المغرب</span></span>
+              <span class="text-center tabular-nums">18:01</span>
+              <span class="text-center tabular-nums text-emerald-300">18:14</span>
+              <span class="text-center tabular-nums text-slate-400">18:34</span>
+            </div>
+            <div class="grid grid-cols-4 items-center px-2.5 py-1.5 rounded-xl bg-white/[0.03] border border-white/5">
+              <span class="font-semibold">อีชา <span class="font-arabic text-amber-300 ml-1">العشاء</span></span>
+              <span class="text-center tabular-nums">19:13</span>
+              <span class="text-center tabular-nums text-emerald-300">19:23</span>
+              <span class="text-center tabular-nums text-slate-400">19:43</span>
+            </div>
+          </div>
+
+          <p class="text-[11px] text-center text-slate-400 mt-3" data-i18n="previewHint">
+            ตัวอย่างหน้าจอแสดงผล • รองรับทั้งแนวตั้งมือถือและแนวนอนทีวีมัสยิด
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 Features Grid -->
+    <section class="space-y-5">
+      <div class="text-center max-w-2xl mx-auto space-y-1.5">
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white" data-i18n="featuresTitle">ความสามารถหลักในรุ่น v9.1</h2>
+        <p class="text-xs sm:text-sm text-slate-400" data-i18n="featuresSub">ออกแบบมาเพื่อใช้งานจริงในมัสยิดและชีวิตประจำวัน โดยไม่ต้องพึ่งอินเทอร์เน็ต</p>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="glass-card rounded-2xl p-5 space-y-2">
+          <div class="text-2xl">🔕</div>
+          <h3 class="font-bold text-amber-300 text-base" data-i18n="f1Title">ปิด-คืนเสียงอัตโนมัติแม่นยำ</h3>
+          <p class="text-xs text-slate-300 leading-relaxed" data-i18n="f1Desc">ปรับเวลารอหลังอาซาน ระยะเวลาเงียบ ชดเชยเวลาอาซาน ±30 นาที ล็อกเวลาเริ่มตายตัว (FIXED) และแยกตั้งค่าวันศุกร์ (ญุมุอะฮ์) ได้ครบถ้วน</p>
+        </div>
+        <div class="glass-card rounded-2xl p-5 space-y-2">
+          <div class="text-2xl">🗺️</div>
+          <h3 class="font-bold text-amber-300 text-base" data-i18n="f2Title">ครบ 77 จังหวัด &amp; 3 ภาษา</h3>
+          <p class="text-xs text-slate-300 leading-relaxed" data-i18n="f2Desc">คำนวณเวลาละหมาดตามพิกัดจริงครบทุกจังหวัดทั่วประเทศไทย พร้อมปฏิทิน อ.เมือง จ.ยะลา ต้นฉบับ และสลับภาษา ไทย / อาหรับ (RTL) / อังกฤษ ได้ทันที</p>
+        </div>
+        <div class="glass-card rounded-2xl p-5 space-y-2">
+          <div class="text-2xl">📺</div>
+          <h3 class="font-bold text-amber-300 text-base" data-i18n="f3Title">โหมดจอทีวีมัสยิด &amp; Wake Lock</h3>
+          <p class="text-xs text-slate-300 leading-relaxed" data-i18n="f3Desc">แสดงผลแนวนอนสไตล์ Tawkit เปิดจอค้างไม่ดับอัตโนมัติ พร้อมหน้าจอนับถอยหลังสู่อิกอมะฮ์และหน้าจอมืดถนอมสายตาขณะละหมาด</p>
+        </div>
+        <div class="glass-card rounded-2xl p-5 space-y-2">
+          <div class="text-2xl">📱</div>
+          <h3 class="font-bold text-amber-300 text-base" data-i18n="f4Title">แชร์ QR Code &amp; คลังหลายมัสยิด</h3>
+          <p class="text-xs text-slate-300 leading-relaxed" data-i18n="f4Desc">สร้าง QR Code ตั้งค่าประจำมัสยิดให้กรรมการหรือสัปปุรุษสแกนใช้งานตามได้ทันที พร้อมคลังบันทึกหลายมัสยิดเพื่อสลับใช้งานในคลิกเดียว</p>
+        </div>
+        <div class="glass-card rounded-2xl p-5 space-y-2">
+          <div class="text-2xl">🧩</div>
+          <h3 class="font-bold text-amber-300 text-base" data-i18n="f5Title">วิกเจ็ตบนหน้าจอมือถือ</h3>
+          <p class="text-xs text-slate-300 leading-relaxed" data-i18n="f5Desc">ดูตารางละหมาดวันนี้และเวลาถัดไปบนหน้าจอโฮมของมือถือ พร้อมปุ่มลัด "ข้ามรอบนี้" เพื่อยกเว้นการปิดเสียงรอบถัดไปได้โดยไม่ต้องเปิดแอป</p>
+        </div>
+        <div class="glass-card rounded-2xl p-5 space-y-2">
+          <div class="text-2xl">🧭</div>
+          <h3 class="font-bold text-amber-300 text-base" data-i18n="f6Title">เข็มทิศกิบลัต &amp; ปฏิทินสุนนะฮ์</h3>
+          <p class="text-xs text-slate-300 leading-relaxed" data-i18n="f6Desc">คำนวณองศากิบลัตตามพิกัด 77 จังหวัด พร้อมปฏิทินรายเดือนไฮไลต์วันถือศีลอดสุนนะฮ์ (จันทร์-พฤหัสบดี, อัยยามุลบีฎ 13–15 ค่ำ) และอัซการ์หลังละหมาด</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Installation Guide (Phone vs Android TV) -->
+    <section id="install-guide" class="glass-card rounded-3xl p-6 sm:p-8 space-y-5">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 class="text-xl sm:text-2xl font-extrabold text-white" data-i18n="installTitle">วิธีติดตั้งไฟล์ APK แบบเข้าใจง่าย</h2>
+          <p class="text-xs text-slate-400 mt-0.5" data-i18n="installSub">เลือกอุปกรณ์ที่คุณต้องการติดตั้งด้านล่าง</p>
+        </div>
+        <div class="flex bg-slate-900 border border-amber-500/25 rounded-xl p-1">
+          <button type="button" id="tabPhoneBtn" class="install-tab px-3.5 py-1.5 rounded-lg text-xs font-bold bg-amber-400 text-slate-950 transition" data-i18n="tabPhone">มือถือ Android</button>
+          <button type="button" id="tabTvBtn" class="install-tab px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition" data-i18n="tabTv">กล่อง Android TV มัสยิด</button>
+        </div>
+      </div>
+
+      <div id="phoneSteps" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs sm:text-sm">
+        <div class="p-4 rounded-2xl bg-slate-900/70 border border-white/5 space-y-1.5">
+          <div class="text-amber-400 font-extrabold">1. ดาวน์โหลดไฟล์</div>
+          <p class="text-slate-300 text-xs leading-relaxed">กดปุ่ม "ดาวน์โหลด Prayer Silence APK" ด้านบน เพื่อบันทึกไฟล์ลงเครื่อง</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-slate-900/70 border border-white/5 space-y-1.5">
+          <div class="text-amber-400 font-extrabold">2. อนุญาตติดตั้งแอป</div>
+          <p class="text-slate-300 text-xs leading-relaxed">แตะเปิดไฟล์ที่โหลดมา หากเครื่องถามสิทธิ์ให้กด "อนุญาตจากแหล่งนี้" แล้วกดติดตั้ง</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-slate-900/70 border border-white/5 space-y-1.5">
+          <div class="text-amber-400 font-extrabold">3. เปิดสิทธิ์ห้ามรบกวน</div>
+          <p class="text-slate-300 text-xs leading-relaxed">เปิดแอปแล้วกดอนุญาตสิทธิ์ "ห้ามรบกวน (Do Not Disturb)" และการปลุกตรงเวลา</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-slate-900/70 border border-white/5 space-y-1.5">
+          <div class="text-amber-400 font-extrabold">4. เลือกจังหวัด &amp; เปิดใช้</div>
+          <p class="text-slate-300 text-xs leading-relaxed">เลือกจังหวัดหรือสแกน QR Code จากมัสยิด แล้วกด "เปิดอัตโนมัติตามตารางจังหวัดนี้"</p>
+        </div>
+      </div>
+
+      <div id="tvSteps" class="hidden grid sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs sm:text-sm">
+        <div class="p-4 rounded-2xl bg-slate-900/70 border border-white/5 space-y-1.5">
+          <div class="text-emerald-300 font-extrabold">1. นำไฟล์ลง Flash Drive</div>
+          <p class="text-slate-300 text-xs leading-relaxed">โหลดไฟล์ APK ลงแฟลชไดรฟ์ หรือใช้แอป Downloader บนกล่อง Android TV เพื่อดาวน์โหลดจากลิงก์</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-slate-900/70 border border-white/5 space-y-1.5">
+          <div class="text-emerald-300 font-extrabold">2. ติดตั้งลงกล่องทีวี</div>
+          <p class="text-slate-300 text-xs leading-relaxed">เปิดแอป File Manager บนทีวี เลือกไฟล์ APK และกดติดตั้งให้เรียบร้อย</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-slate-900/70 border border-white/5 space-y-1.5">
+          <div class="text-emerald-300 font-extrabold">3. เปิดโหมดจอแนวนอน</div>
+          <p class="text-slate-300 text-xs leading-relaxed">เข้าแท็บ "ตั้งค่า" เปิด Wake Lock (หน้าจอค้างไม่ดับ) และกดปุ่ม "จอแนวนอน (Tawkit TV)"</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-slate-900/70 border border-white/5 space-y-1.5">
+          <div class="text-emerald-300 font-extrabold">4. แสดง QR ให้สัปปุรุษ</div>
+          <p class="text-slate-300 text-xs leading-relaxed">ตั้งค่ามัสยิดครั้งเดียว แล้วกดแสดง QR Code เพื่อให้ผู้มาละหมาดสแกนตั้งค่าตามมัสยิดได้ทันที</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Support / Sadaqah Jariyah Card -->
+    <section class="glass-card rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 border-amber-400/40">
+      <div class="space-y-2 text-center md:text-left">
+        <div class="inline-flex items-center gap-2 text-xs font-bold text-amber-300">
+          <span>🤲</span>
+          <span data-i18n="supportBadge">ซอดาเกาะฮ์ญาริยะฮ์ • สนับสนุนผู้พัฒนา</span>
+        </div>
+        <h3 class="text-xl font-extrabold text-white" data-i18n="supportTitle">ร่วมสนับสนุนการพัฒนาแอป Prayer Silence</h3>
+        <p class="text-xs sm:text-sm text-slate-300 max-w-xl" data-i18n="supportDesc">
+          แอปพลิเคชันนี้เปิดให้มัสยิดและพี่น้องมุสลิมใช้งานฟรี 100% ไร้โฆษณาคั่น หากท่านเห็นว่าแอปนี้เป็นประโยชน์ สามารถร่วมสนับสนุนค่าบำรุงรักษาและพัฒนาต่อยอดผ่านพร้อมเพย์ได้ตามจิตศรัทธา
+        </p>
+      </div>
+      <div class="shrink-0 bg-slate-950/90 border border-amber-400/35 rounded-2xl p-4 text-center space-y-2.5 w-full md:w-auto min-w-[240px]">
+        <div class="text-[11px] text-slate-400 font-semibold">THAI PROMPTPAY</div>
+        <div class="text-xl font-extrabold text-amber-300 tracking-wider tabular-nums">087-002-6733</div>
+        <button id="copyPromptPayBtn" type="button"
+          class="w-full px-4 py-2 rounded-xl bg-amber-400/15 hover:bg-amber-400/25 border border-amber-400/40 text-amber-300 text-xs font-bold transition">
+          <span data-i18n="copyPp">คัดลอกเบอร์พร้อมเพย์</span>
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="border-t border-white/10 py-6 text-center text-xs text-slate-500">
+    <p>Prayer Silence v9.1 • Inspired by <a href="https://www.tawkit.net/en/" target="_blank" rel="noopener noreferrer" class="text-amber-400/80 hover:text-amber-300 underline">Tawkit Mosque Display</a></p>
+  </footer>
+
+  <script>
+    // =========================================================================
+    // ตั้งค่าลิงก์ดาวน์โหลดไฟล์ APK ของคุณที่นี่ (เช่น ลิงก์ Google Drive หรือ GitHub Releases)
+    // =========================================================================
+    const DEFAULT_APK_URL = "https://github.com/maolana-code/Prayer_Silence/releases/download/v9.1/app-release.apk";
+
+    let currentLang = "th";
+    let apkUrl = DEFAULT_APK_URL;
+
+    try {
+      const saved = localStorage.getItem("prayer_silence_apk_url");
+      if (saved) apkUrl = saved;
+    } catch (_) {}
+
+    const i18n = {
+      th: {
+        tagline: "โหมดเงียบละหมาดอัตโนมัติ & จอมัสยิดสไตล์ Tawkit",
+        heroBadge: "ทำงานออฟไลน์ 100% • ครบ 77 จังหวัดในไทย • ไร้โฆษณาคั่น",
+        heroTitle1: "ปิดเสียงมือถืออัตโนมัติทุกวักตู",
+        heroTitle2: "พร้อมเปลี่ยนจอทีวีมัสยิดสไตล์ Tawkit",
+        heroDesc: "แอปพลิเคชันสำหรับมัสยิดและพี่น้องมุสลิม ช่วยตัดเสียงเรียกเข้าและเปิดโหมดห้ามรบกวนอัตโนมัติเมื่อถึงเวลาละหมาด 5 เวลาและวันศุกร์ แสดงผลได้ทั้งแนวตั้งบนมือถือและแนวนอนบนจอสมาร์ททีวีของมัสยิด",
+        downloadBtn: "ดาวน์โหลด Prayer Silence APK (v9.1)",
+        copyShareText: "คัดลอกข้อความแชร์เข้ากลุ่มมัสยิด",
+        setApkLink: "ใส่ลิงก์ APK",
+        previewMosque: "🕌 มัสยิดกลางลำใหม่ • จ.ยะลา",
+        autoBadge: "อัตโนมัติเปิดอยู่",
+        colPrayer: "ละหมาด",
+        colAdhan: "อาซาน",
+        colIqamah: "อิกอมะฮ์",
+        colRestore: "คืนเสียง",
+        previewHint: "ตัวอย่างหน้าจอแสดงผล • รองรับทั้งแนวตั้งมือถือและแนวนอนทีวีมัสยิด",
+        featuresTitle: "ความสามารถหลักในรุ่น v9.1",
+        featuresSub: "ออกแบบมาเพื่อใช้งานจริงในมัสยิดและชีวิตประจำวัน โดยไม่ต้องพึ่งอินเทอร์เน็ต",
+        f1Title: "ปิด-คืนเสียงอัตโนมัติแม่นยำ",
+        f1Desc: "ปรับเวลารอหลังอาซาน ระยะเวลาเงียบ ชดเชยเวลาอาซาน ±30 นาที ล็อกเวลาเริ่มตายตัว (FIXED) และแยกตั้งค่าวันศุกร์ (ญุมุอะฮ์) ได้ครบถ้วน",
+        f2Title: "ครบ 77 จังหวัด & 3 ภาษา",
+        f2Desc: "คำนวณเวลาละหมาดตามพิกัดจริงครบทุกจังหวัดทั่วประเทศไทย พร้อมปฏิทิน อ.เมือง จ.ยะลา ต้นฉบับ และสลับภาษา ไทย / อาหรับ (RTL) / อังกฤษ ได้ทันที",
+        f3Title: "โหมดจอทีวีมัสยิด & Wake Lock",
+        f3Desc: "แสดงผลแนวนอนสไตล์ Tawkit เปิดจอค้างไม่ดับอัตโนมัติ พร้อมหน้าจอนับถอยหลังสู่อิกอมะฮ์และหน้าจอมืดถนอมสายตาขณะละหมาด",
+        f4Title: "แชร์ QR Code & คลังหลายมัสยิด",
+        f4Desc: "สร้าง QR Code ตั้งค่าประจำมัสยิดให้กรรมการหรือสัปปุรุษสแกนใช้งานตามได้ทันที พร้อมคลังบันทึกหลายมัสยิดเพื่อสลับใช้งานในคลิกเดียว",
+        f5Title: "วิกเจ็ตบนหน้าจอมือถือ",
+        f5Desc: "ดูตารางละหมาดวันนี้และเวลาถัดไปบนหน้าจอโฮมของมือถือ พร้อมปุ่มลัด \"ข้ามรอบนี้\" เพื่อยกเว้นการปิดเสียงรอบถัดไปได้โดยไม่ต้องเปิดแอป",
+        f6Title: "เข็มทิศกิบลัต & ปฏิทินสุนนะฮ์",
+        f6Desc: "คำนวณองศากิบลัตตามพิกัด 77 จังหวัด พร้อมปฏิทินรายเดือนไฮไลต์วันถือศีลอดสุนนะฮ์ (จันทร์-พฤหัสบดี, อัยยามุลบีฎ 13–15 ค่ำ) และอัซการ์หลังละหมาด",
+        installTitle: "วิธีติดตั้งไฟล์ APK แบบเข้าใจง่าย",
+        installSub: "เลือกอุปกรณ์ที่คุณต้องการติดตั้งด้านล่าง",
+        tabPhone: "มือถือ Android",
+        tabTv: "กล่อง Android TV มัสยิด",
+        supportBadge: "ซอดาเกาะฮ์ญาริยะฮ์ • สนับสนุนผู้พัฒนา",
+        supportTitle: "ร่วมสนับสนุนการพัฒนาแอป Prayer Silence",
+        supportDesc: "แอปพลิเคชันนี้เปิดให้มัสยิดและพี่น้องมุสลิมใช้งานฟรี 100% ไร้โฆษณาคั่น หากท่านเห็นว่าแอปนี้เป็นประโยชน์ สามารถร่วมสนับสนุนค่าบำรุงรักษาและพัฒนาต่อยอดผ่านพร้อมเพย์ได้ตามจิตศรัทธา",
+        copyPp: "คัดลอกเบอร์พร้อมเพย์",
+        modalTitle: "ตั้งค่าลิงก์ดาวน์โหลด APK จริง",
+        modalDesc: "วางลิงก์ไฟล์ app-release.apk จาก Google Drive, GitHub Releases หรือโฮสต์ของคุณ เพื่อให้ปุ่มดาวน์โหลดบนหน้านี้พร้อมใช้งานทันที",
+        cancel: "ยกเลิก",
+        saveLink: "บันทึกลิงก์"
+      },
+      ar: {
+        tagline: "وضع الصمت التلقائي للصلاة وشاشة المسجد",
+        heroBadge: "يعمل بدون إنترنت 100% • جميع محافظات تايلاند الـ 77 • بدون إعلانات",
+        heroTitle1: "صمت تلقائي للهاتف عند كل صلاة",
+        heroTitle2: "مع شاشة عرض المساجد بتصميم Tawkit",
+        heroDesc: "تطبيق للمساجد والمصلين يقوم بتفعيل وضع عدم الإزعاج تلقائياً عند دخول وقت الإقامة للصلوات الخمس وصلاة الجمعة، ويدعم العرض العمودي للهاتف والأفقي لشاشات التلفاز في المساجد.",
+        downloadBtn: "تحميل Prayer Silence APK (v9.1)",
+        copyShareText: "نسخ رسالة المشاركة للمسجد",
+        setApkLink: "تعيين رابط APK",
+        previewMosque: "🕌 مسجد لام ماي المركزي • يالا",
+        autoBadge: "التلقائي مفعل",
+        colPrayer: "الصلاة",
+        colAdhan: "الأذان",
+        colIqamah: "الإقامة",
+        colRestore: "عودة الصوت",
+        previewHint: "معاينة للشاشة • يدعم العرض العمودي والأفقي للتلفاز",
+        featuresTitle: "أبرز مميزات الإصدار v9.1",
+        featuresSub: "مصمم للاستخدام العملي في المساجد والحياة اليومية بدون إنترنت",
+        f1Title: "صمت واستعادة صوت تلقائية",
+        f1Desc: "تعديل دقائق الانتظار بعد الأذان ومدة الصمت وتعديل وقت الأذان ±30 دقيقة وتثبيت الإقامة (FIXED) وإعدادات خاصة ليوم الجمعة.",
+        f2Title: "77 محافظة تايلاندية و 3 لغات",
+        f2Desc: "حساب دقيق لأوقات الصلاة في جميع محافظات تايلاند الـ 77 مع دعم اللغات التايلاندية والعربية والإنجليزية.",
+        f3Title: "شاشة المسجد الأفقية و Wake Lock",
+        f3Desc: "عرض أفقي بتصميم Tawkit مع إبقاء الشاشة مضاءة دائماً، والعد التنازلي للإقامة وشاشة داكنة أثناء الصلاة.",
+        f4Title: "مشاركة QR وتعدد المساجد",
+        f4Desc: "توليد رمز QR لإعدادات المسجد لمشاركته بسهولة مع إمكانية حفظ عدة مساجد والتبديل بينها بنقرة واحدة.",
+        f5Title: "أداة الشاشة الرئيسية (Widget)",
+        f5Desc: "عرض أوقات الصلاة اليومية على الشاشة الرئيسية للهاتف مع زر اختصار لتخطي الفترة القادمة فوراً.",
+        f6Title: "اتجاه القبلة وتقويم الصيام",
+        f6Desc: "حساب زاوية القبلة بدقة لـ 77 محافظة وتقويم شهري لصيام الإثنين والخميس والأيام البيض (13-15) مع أذكار بعد الصلاة.",
+        installTitle: "خطوات تثبيت ملف APK",
+        installSub: "اختر نوع الجهاز بالأسفل",
+        tabPhone: "هاتف Android",
+        tabTv: "شاشة Android TV للمسجد",
+        supportBadge: "صدقة جارية • دعم المطور",
+        supportTitle: "ساهم في دعم تطوير تطبيق Prayer Silence",
+        supportDesc: "التطبيق مجاني 100% وبدون إعلانات للمساجد والمسلمين. يمكنكم المساهمة في دعم التطوير المستمر عبر PromptPay.",
+        copyPp: "نسخ رقم PromptPay",
+        modalTitle: "إعداد رابط تحميل APK",
+        modalDesc: "أدخل رابط ملف app-release.apk من Google Drive أو GitHub Releases.",
+        cancel: "إلغاء",
+        saveLink: "حفظ الرابط"
+      },
+      en: {
+        tagline: "Automatic Prayer Silence & Tawkit-Style Mosque Display",
+        heroBadge: "100% Offline • All 77 Thai Provinces • Zero Ads",
+        heroTitle1: "Auto-Silence Your Phone for Every Prayer",
+        heroTitle2: "With Tawkit-Style Mosque TV Display",
+        heroDesc: "Built for mosques and daily worshippers. Automatically enables Do Not Disturb for all 5 daily prayers and Friday Jumu'ah, with portrait phone view and landscape Android TV display mode.",
+        downloadBtn: "Download Prayer Silence APK (v9.1)",
+        copyShareText: "Copy Mosque Group Share Text",
+        setApkLink: "Set APK Link",
+        previewMosque: "🕌 Lam Mai Central Mosque • Yala",
+        autoBadge: "Auto ON",
+        colPrayer: "Prayer",
+        colAdhan: "Adhan",
+        colIqamah: "Iqamah",
+        colRestore: "Restore",
+        previewHint: "Live display preview • Supports phone portrait & mosque TV landscape",
+        featuresTitle: "What's Included in v9.1",
+        featuresSub: "Designed for mosques and everyday reliability without internet dependency",
+        f1Title: "Accurate Auto DND & Restore",
+        f1Desc: "Customize wait delays, silence duration, ±30 min Adhan offsets, FIXED start times, and dedicated Friday Jumu'ah rules.",
+        f2Title: "All 77 Provinces & 3 Languages",
+        f2Desc: "Astronomical prayer times across all 77 Thai provinces plus original Yala table, in Thai, Arabic (RTL), and English.",
+        f3Title: "Mosque TV Mode & Wake Lock",
+        f3Desc: "Landscape Tawkit display with Wake Lock, full-screen Iqamah countdown, and dark OLED screen during congregational prayer.",
+        f4Title: "QR Profile Share & Multi-Mosque",
+        f4Desc: "Share mosque settings via QR code and save multiple mosque profiles for instant 1-tap switching.",
+        f5Title: "Android Home Screen Widget",
+        f5Desc: "View today's 5 daily prayers and next slot countdown from your phone home screen with a 1-tap Skip Next Slot button.",
+        f6Title: "Qibla Compass & Sunnah Fasting",
+        f6Desc: "Province-accurate Qibla bearing dial, monthly calendar highlighting Monday/Thursday & Ayyam al-Beed fasts, plus Post-Prayer Adhkar.",
+        installTitle: "How to Install the APK",
+        installSub: "Choose your device type below",
+        tabPhone: "Android Phone",
+        tabTv: "Mosque Android TV Box",
+        supportBadge: "Sadaqah Jariyah • Support Developer",
+        supportTitle: "Support Prayer Silence Development",
+        supportDesc: "Prayer Silence is 100% free and ad-free for mosques and Muslims. Support ongoing maintenance and new features via Thai PromptPay.",
+        copyPp: "Copy PromptPay Number",
+        modalTitle: "Set Live APK Download URL",
+        modalDesc: "Paste your hosted app-release.apk link (Google Drive, GitHub Releases, etc.) so the download button links directly to your APK.",
+        cancel: "Cancel",
+        saveLink: "Save URL"
+      }
+    };
+
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      toast.textContent = msg;
+      toast.classList.remove("hidden");
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => toast.classList.add("hidden"), 2600);
+    }
+
+    function copyText(text, successMsg) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => showToast(successMsg)).catch(() => fallbackCopy(text, successMsg));
+      } else {
+        fallbackCopy(text, successMsg);
+      }
+    }
+
+    function fallbackCopy(text, successMsg) {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand("copy");
+        showToast(successMsg);
+      } catch (_) {}
+      document.body.removeChild(ta);
+    }
+
+    function applyLanguage(lang) {
+      currentLang = lang;
+      document.documentElement.lang = lang;
+      document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+
+      const dict = i18n[lang] || i18n.th;
+      document.querySelectorAll("[data-i18n]").forEach((el) => {
+        const key = el.getAttribute("data-i18n");
+        if (dict[key]) el.textContent = dict[key];
+      });
+
+      document.querySelectorAll(".lang-btn").forEach((btn) => {
+        const active = btn.getAttribute("data-lang") === lang;
+        btn.className = active
+          ? "lang-btn px-2.5 py-1 rounded-lg text-xs font-bold transition bg-amber-400 text-slate-950"
+          : "lang-btn px-2.5 py-1 rounded-lg text-xs font-bold transition text-slate-300 hover:text-white";
+      });
+      updateApkLinkDisplay();
+    }
+
+    function updateApkLinkDisplay() {
+      const btn = document.getElementById("downloadApkBtn");
+      const status = document.getElementById("apkUrlStatus");
+      if (apkUrl && apkUrl.trim().length > 0) {
+        btn.href = apkUrl.trim();
+        btn.setAttribute("target", "_blank");
+        btn.setAttribute("rel", "noopener noreferrer");
+        status.textContent = currentLang === "ar" ? "رابط APK جاهز للتحميل" : currentLang === "en" ? "Direct APK link ready" : "ลิงก์ไฟล์ APK พร้อมดาวน์โหลดแล้ว";
+      } else {
+        btn.href = "#install-guide";
+        btn.removeAttribute("target");
+        status.textContent = currentLang === "ar" ? "اضغط 'تعيين رابط APK' لإضافة رابط التحميل" : currentLang === "en" ? "Click 'Set APK Link' to attach your hosted APK URL" : "กด 'ใส่ลิงก์ APK' เพื่อผูกลิงก์ไฟล์จริง";
+      }
+    }
+
+    function updateClock() {
+      const now = new Date();
+      const pad = (n) => String(n).padStart(2, "0");
+      document.getElementById("liveClock").textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+      const options = { weekday: "short", day: "numeric", month: "short", year: "numeric" };
+      const locale = currentLang === "ar" ? "ar-SA" : currentLang === "en" ? "en-GB" : "th-TH";
+      document.getElementById("liveDateText").textContent = now.toLocaleDateString(locale, options);
+    }
+
+    // Event Listeners
+    document.querySelectorAll(".lang-btn").forEach((btn) => {
+      btn.addEventListener("click", () => applyLanguage(btn.getAttribute("data-lang")));
+    });
+
+    document.getElementById("tabPhoneBtn").addEventListener("click", () => {
+      document.getElementById("phoneSteps").classList.remove("hidden");
+      document.getElementById("tvSteps").classList.add("hidden");
+      document.getElementById("tabPhoneBtn").className = "install-tab px-3.5 py-1.5 rounded-lg text-xs font-bold bg-amber-400 text-slate-950 transition";
+      document.getElementById("tabTvBtn").className = "install-tab px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition";
+    });
+
+    document.getElementById("tabTvBtn").addEventListener("click", () => {
+      document.getElementById("phoneSteps").classList.add("hidden");
+      document.getElementById("tvSteps").classList.remove("hidden");
+      document.getElementById("tabTvBtn").className = "install-tab px-3.5 py-1.5 rounded-lg text-xs font-bold bg-amber-400 text-slate-950 transition";
+      document.getElementById("tabPhoneBtn").className = "install-tab px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition";
+    });
+
+    document.getElementById("copyPromptPayBtn").addEventListener("click", () => {
+      copyText("0870026733", currentLang === "en" ? "Copied PromptPay: 087-002-6733" : "คัดลอกเบอร์พร้อมเพย์ 087-002-6733 แล้ว");
+    });
+
+    document.getElementById("copyShareBtn").addEventListener("click", () => {
+      const linkLine = apkUrl ? apkUrl : "[ใส่ลิงก์หน้าเว็บดาวน์โหลดของคุณที่นี่]";
+      const shareMsg = `🕌 แนะนำแอป Prayer Silence (v9.1) — แอปปิดเสียงมือถืออัตโนมัติเวลาละหมาด 5 เวลา & วันศุกร์\n✔ ใช้งานออฟไลน์ 100% ครบ 77 จังหวัดในไทย\n✔ มีโหมดจอทีวีมัสยิดสไตล์ Tawkit และสแกน QR ตั้งค่าตามมัสยิดได้ทันที\n📲 ดาวน์โหลดไฟล์ APK: ${linkLine}`;
+      copyText(shareMsg, currentLang === "en" ? "Copied mosque share message!" : "คัดลอกข้อความแชร์เข้ากลุ่มมัสยิดแล้ว!");
+    });
+
+    document.getElementById("downloadApkBtn").addEventListener("click", (e) => {
+      if (!apkUrl || apkUrl.trim() === "") {
+        e.preventDefault();
+        document.getElementById("apkUrlInput").value = "";
+        document.getElementById("linkModal").classList.remove("hidden");
+        document.getElementById("linkModal").classList.add("flex");
+      }
+    });
+
+    document.getElementById("openLinkModalBtn").addEventListener("click", () => {
+      document.getElementById("apkUrlInput").value = apkUrl;
+      document.getElementById("linkModal").classList.remove("hidden");
+      document.getElementById("linkModal").classList.add("flex");
+    });
+
+    function closeLinkModal() {
+      document.getElementById("linkModal").classList.add("hidden");
+      document.getElementById("linkModal").classList.remove("flex");
+    }
+
+    document.getElementById("closeModalBtn").addEventListener("click", closeLinkModal);
+    document.getElementById("cancelModalBtn").addEventListener("click", closeLinkModal);
+
+    document.getElementById("saveApkUrlBtn").addEventListener("click", () => {
+      const val = document.getElementById("apkUrlInput").value.trim();
+      apkUrl = val;
+      try {
+        localStorage.setItem("prayer_silence_apk_url", val);
+      } catch (_) {}
+      updateApkLinkDisplay();
+      closeLinkModal();
+      showToast(val ? "บันทึกลิงก์ดาวน์โหลด APK แล้ว!" : "ล้างลิงก์เรียบร้อยแล้ว");
+    });
+
+    // Init
+    applyLanguage("th");
+    updateClock();
+    setInterval(updateClock, 1000);
+  </script>
+</body>
+</html>
