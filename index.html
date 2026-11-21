@@ -65,6 +65,22 @@
     </div>
   </div>
 
+  <!-- Lightbox Modal สำหรับกดดูรูปตัวอย่างแอปขนาดใหญ่ -->
+  <div id="lightboxModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/90 backdrop-blur-md p-3 sm:p-6">
+    <div class="relative w-full max-w-4xl flex flex-col items-center gap-3">
+      <div class="w-full flex items-center justify-between text-white px-1">
+        <div id="lightboxCaption" class="text-sm sm:text-base font-bold text-amber-300 truncate pr-4"></div>
+        <button id="closeLightboxBtn" type="button" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-white border border-white/15">✕ ปิด</button>
+      </div>
+      <div class="relative w-full flex items-center justify-center">
+        <button id="prevLightboxBtn" type="button" class="absolute left-1 sm:left-2 z-10 w-10 h-10 rounded-full bg-black/70 hover:bg-amber-400 hover:text-slate-950 text-white border border-amber-400/40 font-extrabold text-xl flex items-center justify-center transition">‹</button>
+        <img id="lightboxImg" src="" alt="App Screenshot" class="max-h-[78vh] max-w-full w-auto h-auto rounded-2xl border border-amber-400/40 shadow-2xl object-contain" />
+        <button id="nextLightboxBtn" type="button" class="absolute right-1 sm:right-2 z-10 w-10 h-10 rounded-full bg-black/70 hover:bg-amber-400 hover:text-slate-950 text-white border border-amber-400/40 font-extrabold text-xl flex items-center justify-center transition">›</button>
+      </div>
+      <div id="lightboxCounter" class="text-xs text-slate-400 font-semibold"></div>
+    </div>
+  </div>
+
   <!-- Navbar -->
   <header class="sticky top-0 z-40 backdrop-blur-md bg-[#070b0e]/85 border-b border-amber-500/20">
     <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
@@ -207,6 +223,128 @@
       </div>
     </section>
 
+    <!-- Real App Screenshots Gallery (10 รูปจริงจากเครื่อง) -->
+    <section id="screenshots" class="space-y-5">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div class="space-y-1">
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-white" data-i18n="galleryTitle">ตัวอย่างหน้าจอแอปจริง (10 ภาพ)</h2>
+          <p class="text-xs sm:text-sm text-slate-400" data-i18n="gallerySub">แตะที่รูปภาพเพื่อขยายดูรายละเอียดเต็มจอ • รองรับครบทั้งแนวตั้งมือถือและแนวนอนทีวีมัสยิด</p>
+        </div>
+        <div class="flex flex-wrap gap-1.5 bg-slate-900/90 border border-amber-500/25 rounded-xl p-1">
+          <button type="button" data-filter="all" class="gal-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-400 text-slate-950 transition" data-i18n="filterAll">ทั้งหมด (10)</button>
+          <button type="button" data-filter="themes" class="gal-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition" data-i18n="filterThemes">ธีมหน้าหลัก (4)</button>
+          <button type="button" data-filter="tv" class="gal-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition" data-i18n="filterTv">จอทีวี &amp; ขณะละหมาด (3)</button>
+          <button type="button" data-filter="tools" class="gal-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition" data-i18n="filterTools">กิบลัต &amp; สุนะฮ์ (3)</button>
+        </div>
+      </div>
+
+      <!-- Landscape Showcase Row (จอทีวีแนวนอน + อิกอมะฮ์ + หน้าจอมืดละหมาด) -->
+      <div id="landscapeGallery" class="grid md:grid-cols-3 gap-4">
+        <button type="button" data-cat="tv" data-idx="0" class="shot-card group glass-card rounded-2xl p-3 text-left hover:border-amber-400/70 transition flex flex-col gap-2.5">
+          <div class="overflow-hidden rounded-xl border border-white/10 bg-black aspect-[16/8]">
+            <img src="screen-tv.jpeg" alt="โหมดจอทีวีมัสยิดแนวนอน Tawkit" class="w-full h-full object-cover group-hover:scale-[1.03] transition duration-300" />
+          </div>
+          <div>
+            <div class="text-xs font-bold text-amber-300">📺 โหมดจอทีวีมัสยิดแนวนอน (Tawkit TV)</div>
+            <div class="text-[11px] text-slate-400">แสดงนาฬิกาใหญ่ ตาราง 5 เวลา และประกาศมัสยิดครบจอ</div>
+          </div>
+        </button>
+
+        <button type="button" data-cat="tv" data-idx="1" class="shot-card group glass-card rounded-2xl p-3 text-left hover:border-amber-400/70 transition flex flex-col gap-2.5">
+          <div class="overflow-hidden rounded-xl border border-white/10 bg-black aspect-[16/8]">
+            <img src="screen-iqama.jpeg" alt="หน้าจอนับถอยหลังสู่อิกอมะฮ์เต็มจอ" class="w-full h-full object-cover group-hover:scale-[1.03] transition duration-300" />
+          </div>
+          <div>
+            <div class="text-xs font-bold text-emerald-300">⏱️ นับถอยหลังสู่อิกอมะฮ์เต็มจอ</div>
+            <div class="text-[11px] text-slate-400">สลับแสดงตัวเลขขนาดใหญ่ทันทีเมื่อเข้าเวลาอาซาน</div>
+          </div>
+        </button>
+
+        <button type="button" data-cat="tv" data-idx="2" class="shot-card group glass-card rounded-2xl p-3 text-left hover:border-amber-400/70 transition flex flex-col gap-2.5">
+          <div class="overflow-hidden rounded-xl border border-white/10 bg-black aspect-[16/8]">
+            <img src="screen-praying.jpeg" alt="หน้าจอมืดขณะละหมาด OLED" class="w-full h-full object-cover group-hover:scale-[1.03] transition duration-300" />
+          </div>
+          <div>
+            <div class="text-xs font-bold text-amber-300">🌙 หน้าจอมืดขณะละหมาด (OLED Dark)</div>
+            <div class="text-[11px] text-slate-400">ถนอมสายตาและลดแสงรบกวนในมัสยิดระหว่างละหมาด</div>
+          </div>
+        </button>
+      </div>
+
+      <!-- Portrait Showcase Grid (4 ธีมหน้าหลัก + 3 ฟีเจอร์เสริม) -->
+      <div id="portraitGallery" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+        <button type="button" data-cat="themes" data-idx="3" class="shot-card group glass-card rounded-2xl p-2.5 text-left hover:border-amber-400/70 transition flex flex-col gap-2">
+          <div class="overflow-hidden rounded-xl border border-white/10 bg-black">
+            <img src="screen-home3.jpeg" alt="หน้าหลักธีมดำ-ทอง" class="w-full h-auto max-w-full group-hover:scale-[1.02] transition duration-300" />
+          </div>
+          <div class="px-1">
+            <div class="text-xs font-bold text-amber-300">✨ ธีมดำ–ทอง (Black–Gold)</div>
+            <div class="text-[10.5px] text-slate-400">หรูหรา อ่านชัดทั้งกลางวันและกลางคืน</div>
+          </div>
+        </button>
+
+        <button type="button" data-cat="themes" data-idx="4" class="shot-card group glass-card rounded-2xl p-2.5 text-left hover:border-amber-400/70 transition flex flex-col gap-2">
+          <div class="overflow-hidden rounded-xl border border-white/10 bg-black">
+            <img src="screen-home4.jpeg" alt="หน้าหลักธีมมรกต" class="w-full h-auto max-w-full group-hover:scale-[1.02] transition duration-300" />
+          </div>
+          <div class="px-1">
+            <div class="text-xs font-bold text-emerald-300">🕌 ธีมมรกต (Emerald)</div>
+            <div class="text-[10.5px] text-slate-400">โทนเขียวมัสยิดสบายตาพร้อมลายโดม</div>
+          </div>
+        </button>
+
+        <button type="button" data-cat="themes" data-idx="5" class="shot-card group glass-card rounded-2xl p-2.5 text-left hover:border-amber-400/70 transition flex flex-col gap-2">
+          <div class="overflow-hidden rounded-xl border border-white/10 bg-black">
+            <img src="screen-home5.jpeg" alt="หน้าหลักธีมน้ำเงินเข้ม" class="w-full h-auto max-w-full group-hover:scale-[1.02] transition duration-300" />
+          </div>
+          <div class="px-1">
+            <div class="text-xs font-bold text-sky-300">🌌 ธีมน้ำเงินเข้ม (Deep Blue)</div>
+            <div class="text-[10.5px] text-slate-400">โทนฟ้าครามยามค่ำคืนพร้อมตัวเลขคมชัด</div>
+          </div>
+        </button>
+
+        <button type="button" data-cat="themes" data-idx="6" class="shot-card group glass-card rounded-2xl p-2.5 text-left hover:border-amber-400/70 transition flex flex-col gap-2">
+          <div class="overflow-hidden rounded-xl border border-white/10 bg-black">
+            <img src="screen-home2.jpeg" alt="หน้าหลักธีมแดง-ทอง" class="w-full h-auto max-w-full group-hover:scale-[1.02] transition duration-300" />
+          </div>
+          <div class="px-1">
+            <div class="text-xs font-bold text-rose-300">🏮 ธีมแดง–ทอง (Burgundy–Gold)</div>
+            <div class="text-[10.5px] text-slate-400">อบอุ่น คลาสสิกสไตล์โคมไฟมัสยิด</div>
+          </div>
+        </button>
+
+        <button type="button" data-cat="tools" data-idx="7" class="shot-card group glass-card rounded-2xl p-2.5 text-left hover:border-amber-400/70 transition flex flex-col gap-2">
+          <div class="overflow-hidden rounded-xl border border-white/10 bg-black">
+            <img src="screen-qibla.jpeg" alt="เข็มทิศองศากิบลัต 77 จังหวัด" class="w-full h-auto max-w-full group-hover:scale-[1.02] transition duration-300" />
+          </div>
+          <div class="px-1">
+            <div class="text-xs font-bold text-amber-300">🧭 เข็มทิศกิบลัต 77 จังหวัด</div>
+            <div class="text-[10.5px] text-slate-400">บอกมุมองศาและระยะทางสู่อัลกะอ์บะฮ์</div>
+          </div>
+        </button>
+
+        <button type="button" data-cat="tools" data-idx="8" class="shot-card group glass-card rounded-2xl p-2.5 text-left hover:border-amber-400/70 transition flex flex-col gap-2">
+          <div class="overflow-hidden rounded-xl border border-white/10 bg-black">
+            <img src="screen-sunat.jpeg" alt="ปฏิทินวันถือศีลอดสุนนะฮ์รายเดือน" class="w-full h-auto max-w-full group-hover:scale-[1.02] transition duration-300" />
+          </div>
+          <div class="px-1">
+            <div class="text-xs font-bold text-emerald-300">📅 ปฏิทินถือศีลอดสุนนะฮ์</div>
+            <div class="text-[10.5px] text-slate-400">ไฮไลต์จันทร์–พฤหัสฯ และอัยยามุลบีฎ 13–15</div>
+          </div>
+        </button>
+
+        <button type="button" data-cat="tools" data-idx="9" class="shot-card group glass-card rounded-2xl p-2.5 text-left hover:border-amber-400/70 transition flex flex-col gap-2">
+          <div class="overflow-hidden rounded-xl border border-white/10 bg-black">
+            <img src="screen-azkar.jpeg" alt="อัซการ์หลังละหมาดและตัวนับซิกิร" class="w-full h-auto max-w-full group-hover:scale-[1.02] transition duration-300" />
+          </div>
+          <div class="px-1">
+            <div class="text-xs font-bold text-amber-300">📿 อัซการ์หลังละหมาด</div>
+            <div class="text-[10.5px] text-slate-400">ครบ 6 บทพร้อมปุ่มแตะนับซิกิร 33 ครั้ง</div>
+          </div>
+        </button>
+      </div>
+    </section>
+
     <!-- 6 Features Grid -->
     <section class="space-y-5">
       <div class="text-center max-w-2xl mx-auto space-y-1.5">
@@ -332,7 +470,7 @@
     // =========================================================================
     // ตั้งค่าลิงก์ดาวน์โหลดไฟล์ APK ของคุณที่นี่ (เช่น ลิงก์ Google Drive หรือ GitHub Releases)
     // =========================================================================
-    const DEFAULT_APK_URL = "https://github.com/maolana-code/Prayer_Silence/releases/download/v9.1/app-release.apk";
+    const DEFAULT_APK_URL = "";
 
     let currentLang = "th";
     let apkUrl = DEFAULT_APK_URL;
@@ -384,7 +522,13 @@
         modalTitle: "ตั้งค่าลิงก์ดาวน์โหลด APK จริง",
         modalDesc: "วางลิงก์ไฟล์ app-release.apk จาก Google Drive, GitHub Releases หรือโฮสต์ของคุณ เพื่อให้ปุ่มดาวน์โหลดบนหน้านี้พร้อมใช้งานทันที",
         cancel: "ยกเลิก",
-        saveLink: "บันทึกลิงก์"
+        saveLink: "บันทึกลิงก์",
+        galleryTitle: "ตัวอย่างหน้าจอแอปจริง (10 ภาพ)",
+        gallerySub: "แตะที่รูปภาพเพื่อขยายดูรายละเอียดเต็มจอ • รองรับครบทั้งแนวตั้งมือถือและแนวนอนทีวีมัสยิด",
+        filterAll: "ทั้งหมด (10)",
+        filterThemes: "ธีมหน้าหลัก (4)",
+        filterTv: "จอทีวี & ขณะละหมาด (3)",
+        filterTools: "กิบลัต & สุนนะฮ์ (3)"
       },
       ar: {
         tagline: "وضع الصمت التلقائي للصلاة وشاشة المسجد",
@@ -427,7 +571,13 @@
         modalTitle: "إعداد رابط تحميل APK",
         modalDesc: "أدخل رابط ملف app-release.apk من Google Drive أو GitHub Releases.",
         cancel: "إلغاء",
-        saveLink: "حفظ الرابط"
+        saveLink: "حفظ الرابط",
+        galleryTitle: "لقطات شاشة حقيقية من التطبيق (10 صور)",
+        gallerySub: "اضغط على أي صورة لتكبيرها • يدعم العرض العمودي للهاتف والأفقي لشاشة المسجد",
+        filterAll: "الكل (10)",
+        filterThemes: "المظاهر (4)",
+        filterTv: "شاشة المسجد (3)",
+        filterTools: "القبلة والصيام (3)"
       },
       en: {
         tagline: "Automatic Prayer Silence & Tawkit-Style Mosque Display",
@@ -470,7 +620,13 @@
         modalTitle: "Set Live APK Download URL",
         modalDesc: "Paste your hosted app-release.apk link (Google Drive, GitHub Releases, etc.) so the download button links directly to your APK.",
         cancel: "Cancel",
-        saveLink: "Save URL"
+        saveLink: "Save URL",
+        galleryTitle: "Real App Screenshots (10 Previews)",
+        gallerySub: "Tap any image to zoom full-screen • Supports both mobile portrait and mosque TV landscape",
+        filterAll: "All (10)",
+        filterThemes: "Home Themes (4)",
+        filterTv: "Mosque TV & Prayer (3)",
+        filterTools: "Qibla & Fasting (3)"
       }
     };
 
@@ -609,6 +765,72 @@
       updateApkLinkDisplay();
       closeLinkModal();
       showToast(val ? "บันทึกลิงก์ดาวน์โหลด APK แล้ว!" : "ล้างลิงก์เรียบร้อยแล้ว");
+    });
+
+    // Gallery Filter & Lightbox Logic
+    const shotCards = Array.from(document.querySelectorAll(".shot-card"));
+    let activeShotIndex = 0;
+
+    function openLightbox(idx) {
+      activeShotIndex = (idx + shotCards.length) % shotCards.length;
+      const card = shotCards[activeShotIndex];
+      const img = card.querySelector("img");
+      const titleEl = card.querySelector("div > div");
+      document.getElementById("lightboxImg").src = img.src;
+      document.getElementById("lightboxCaption").textContent = titleEl ? titleEl.textContent : img.alt;
+      document.getElementById("lightboxCounter").textContent = `${activeShotIndex + 1} / ${shotCards.length}`;
+      const modal = document.getElementById("lightboxModal");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+    }
+
+    function closeLightbox() {
+      const modal = document.getElementById("lightboxModal");
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
+    shotCards.forEach((card, index) => {
+      card.addEventListener("click", () => openLightbox(index));
+    });
+
+    document.getElementById("closeLightboxBtn").addEventListener("click", closeLightbox);
+    document.getElementById("prevLightboxBtn").addEventListener("click", () => openLightbox(activeShotIndex - 1));
+    document.getElementById("nextLightboxBtn").addEventListener("click", () => openLightbox(activeShotIndex + 1));
+    document.getElementById("lightboxModal").addEventListener("click", (e) => {
+      if (e.target.id === "lightboxModal") closeLightbox();
+    });
+    document.addEventListener("keydown", (e) => {
+      const modal = document.getElementById("lightboxModal");
+      if (modal.classList.contains("hidden")) return;
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowLeft") openLightbox(activeShotIndex - 1);
+      if (e.key === "ArrowRight") openLightbox(activeShotIndex + 1);
+    });
+
+    document.querySelectorAll(".gal-filter-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const filter = btn.getAttribute("data-filter");
+        document.querySelectorAll(".gal-filter-btn").forEach((b) => {
+          const isAct = b === btn;
+          b.className = isAct
+            ? "gal-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-400 text-slate-950 transition"
+            : "gal-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition";
+        });
+        let tvVisible = 0;
+        let portVisible = 0;
+        shotCards.forEach((card) => {
+          const cat = card.getAttribute("data-cat");
+          const show = filter === "all" || cat === filter;
+          card.classList.toggle("hidden", !show);
+          if (show) {
+            if (cat === "tv") tvVisible++;
+            else portVisible++;
+          }
+        });
+        document.getElementById("landscapeGallery").classList.toggle("hidden", tvVisible === 0);
+        document.getElementById("portraitGallery").classList.toggle("hidden", portVisible === 0);
+      });
     });
 
     // Init
